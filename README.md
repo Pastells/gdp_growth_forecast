@@ -1,3 +1,3 @@
 ## GDP Growth Forecast
 
-Basic description of your project.
+Python project for a master's course
