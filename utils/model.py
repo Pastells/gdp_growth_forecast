@@ -18,9 +18,10 @@ class GDPGrowthPredictor:
         y_prediction = self.model.predict(X_test, *args, **kwargs)
         return y_prediction
 
-    @staticmethod
-    def load(filename):
-        pass
-
     def save(self, filename):
-        pass
+        """ Save model to file"""
+        self.model.save_model(filename)
+
+    def load(self, filename):
+        """ Load model from file"""
+        self.model.load_model(filename)

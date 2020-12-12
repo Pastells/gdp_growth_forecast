@@ -7,34 +7,11 @@ sys.path.append("..")
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
 from utils import config
 from utils import io
 import utils.model
 
-print("creating dataset")
-df, features = io.read_dataset()
-
-X, y = df.iloc[:, :-1], df.iloc[:, -1]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1)
-
-print("creating model")
-model = utils.model.GDPGrowthPredictor(**config.XG_PARAMS)
-model.train(X_train, y_train)
-model_y_pred = model.predict(X_test)
-
-results_df = X_test
-results_df = results_df.drop(columns=features)
-results_df["y_real"] = y_test
-results_df["y_pred"] = model_y_pred
-results_df["err"] = np.absolute(results_df["y_real"] - results_df["y_pred"])
-results_df["%_err"] = (results_df["err"]) / (np.absolute(results_df["y_real"])) * 100
-
-print(f"RMSE: {mean_squared_error(y_test, model_y_pred)**0.5}")
-print(f"R^2: {r2_score(y_test, model_y_pred)}")
-
-raise ValueError("Error on purpose, following code is not tested")
 
 # Predicted Value Plot
 
