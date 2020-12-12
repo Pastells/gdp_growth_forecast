@@ -8,12 +8,14 @@ from utils import config, io, models
 
 
 logging.basicConfig(
-    filename=os.path.join(config.LOGS_PATH, datetime.now().strftime('cli_%Y-%m-%d_%H:%M:%S.log')),
+    filename=os.path.join(
+        config.LOGS_PATH, datetime.now().strftime("cli_%Y-%m-%d_%H:%M:%S.log")
+    ),
     format="%(asctime)s - [%(levelname)s] - %(message)s",
     level=logging.INFO,
 )
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description="Predict next year GDP growth")
 parser.add_argument(
     "task",
     choices=["train", "predict"],
@@ -26,4 +28,4 @@ if __name__ == "__main__":
     if args.task == "train":
         logging.info("Training")
     if args.task == "predict":
-        logging.info("Predinting")
+        logging.info("Predicting")
