@@ -22,6 +22,8 @@ XG_PARAMS = {
     "lambda": 10,  # L2 regularization
 }
 
+NEXT_YEAR = 2010
+
 
 INDICATORS = [
     "GDP growth (annual %)",
