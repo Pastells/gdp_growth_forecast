@@ -49,20 +49,18 @@ def read_dataset():
 
 
 def retrieve_training_dataset(split):
-    """Returns X_train and y_train using df created by read_dataset"""
-    df, _ = read_dataset()
+    """Returns X/y_train/test and vector features using df created by read_dataset"""
+    df, features = read_dataset()
     X, y = df.iloc[:, :-1], df.iloc[:, -1]
 
     if split != 0:
-        X_train, _, y_train, _ = train_test_split(X, y, test_size=split, random_state=1)
-        return X_train, y_train
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=split, random_state=1
+        )
+        return X_train, X_test, y_train, y_test, features
 
-    return X, y
+    return X, None, y, None, None
 
 
-def retrieve_predict_dataset(split):
-    """Returns X_test, y_test and vector features using df created by read_dataset"""
-    df, features = read_dataset()
-    X, y = df.iloc[:, :-1], df.iloc[:, -1]
-    _, X_test, _, y_test = train_test_split(X, y, test_size=split, random_state=1)
-    return X_test, y_test, features
+def retrieve_predict_dataset():
+    pass

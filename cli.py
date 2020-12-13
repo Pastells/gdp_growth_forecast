@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import time
 import logging
 import argparse
 from datetime import datetime
@@ -35,9 +36,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.task == "train":
         logging.info("Training")
+        t0 = time.time()
         gbm.gbm_train(filename, args.split)
-        if args.split != 0:
-            gbm.gbm_test(filename, args.split)
+        logging.info("Elapsed time training/testing: %.3f seconds", time.time() - t0)
 
     if args.task == "predict":
         logging.info("Predicting")

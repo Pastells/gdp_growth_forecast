@@ -1,9 +1,10 @@
-"""Train gbm model"""
+"""Train/test/predict using gbm model"""
 
 import sys
 
 sys.path.append("..")
 
+import logging
 import numpy as np
 from sklearn.metrics import r2_score, mean_squared_error
 from utils import config
@@ -12,16 +13,18 @@ import utils.model
 
 
 def gbm_train(filename, split):
-    X_train, y_train = io.retrieve_training_dataset(split)
+    """Train model"""
+    X_train, X_test, y_train, y_test, features = io.retrieve_training_dataset(split)
     model = utils.model.GDPGrowthPredictor(**config.XG_PARAMS)
     model.train(X_train, y_train)
     model.save(filename)
 
+    if split != 0:
+        gbm_test(model, X_test, y_test, features, split)
 
-def gbm_test(filename, split):
-    model = utils.model.GDPGrowthPredictor(**config.XG_PARAMS)
-    model.load(filename)
-    X_test, y_test, features = io.retrieve_predict_dataset(split)
+
+def gbm_test(model, X_test, y_test, features, split):
+    """Test model"""
     model_y_pred = model.predict(X_test)
 
     results_df = X_test
@@ -33,5 +36,11 @@ def gbm_test(filename, split):
         (results_df["err"]) / (np.absolute(results_df["y_real"])) * 100
     )
 
-    print(f"RMSE: {mean_squared_error(y_test, model_y_pred)**0.5}")
-    print(f"R^2: {r2_score(y_test, model_y_pred)}")
+    logging.info("Test results with %s split:", split)
+    logging.info("\t RMSE: %.3f", mean_squared_error(y_test, model_y_pred) ** 0.5)
+    logging.info("\t R^2: %.3f", r2_score(y_test, model_y_pred))
+
+
+def gbm_predict(filename):
+    """Make predictions for next year GDP growth"""
+    pass
