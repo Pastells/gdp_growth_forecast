@@ -1,13 +1,12 @@
-"""Read and write into dataset"""
-
+"""Read and write into dataset
+Given that io library already exists we've named it _io"""
 import sqlite3
-import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from utils import config
+from . import config
 
 
-def read_dataset():
+def read_dataset(previous_year):
     """Read dataset and add 'Next GDP Growth' column
     Loads names of columns from indicators list in config
     Returns pandas dataset and names of features"""
@@ -31,12 +30,31 @@ def read_dataset():
     pivoted_df = country_indicators_df.pivot(
         values="Value", index=["Country", "Year"], columns=["IndicatorName"]
     )
+    if previous_year:
+        pivoted_df = add_previous_year(country_indicators_df, pivoted_df)
+
     return pivoted_df, country_indicators_df
 
 
-def retrieve_training_dataset(split):
+def add_previous_year(country_indicators_df, pivoted_df):
+    """Duplicate all indicators,
+    so data from two years is available, instead of just one"""
+    features = pivoted_df.columns.tolist()
+    for indicator in features:
+        indicator_1 = country_indicators_df.loc[
+            country_indicators_df["IndicatorName"] == indicator
+        ].copy()
+        indicator_1["Year"] += 1
+        indicator_1.set_index(["Country", "Year"], inplace=True)
+        indicator_1.rename(columns={"Value": "Previous " + indicator}, inplace=True)
+        indicator_1.drop(columns=["IndicatorName"], inplace=True)
+        pivoted_df = pivoted_df.join(indicator_1)
+    return pivoted_df
+
+
+def retrieve_training_dataset(split, previous_year):
     """Returns X/y_train/test and vector features using df created by read_dataset"""
-    pivoted_df, country_indicators_df = read_dataset()
+    pivoted_df, country_indicators_df = read_dataset(previous_year)
 
     features = pivoted_df.columns.tolist()
 
@@ -64,9 +82,9 @@ def retrieve_training_dataset(split):
     return X, None, y, None, None
 
 
-def retrieve_predict_dataset():
+def retrieve_predict_dataset(previous_year):
     """Return dataset to append predictions and X_predict to create them"""
-    pivoted_df, _ = read_dataset()
+    pivoted_df, _ = read_dataset(previous_year)
     country_list = pivoted_df.index.unique("Country")
 
     # Dataframe with all the countries
@@ -79,5 +97,6 @@ def retrieve_predict_dataset():
 
 
 def write_predictions(predictions):
+    """Write predictions into dataset table"""
     with sqlite3.connect(config.DATABASE_PATH) as conn:
         predictions.to_sql("EstimatedGDPGrowth", conn, if_exists="replace", index=False)

@@ -8,9 +8,7 @@ import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 from sklearn.metrics import r2_score, mean_squared_error
-from utils import config
-from utils import io
-import utils.model
+import config, io, models
 
 
 # Predicted Value Plot
