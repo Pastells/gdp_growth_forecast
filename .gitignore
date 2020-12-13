@@ -1,6 +1,6 @@
 db.sqlite3
+**/__pycache__
 logs/
 !logs/.gitkeep
 models/
 !models/.gitkeep
-**/__pycache__
