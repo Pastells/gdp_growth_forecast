@@ -36,36 +36,49 @@ def log_print_func():
     root.addHandler(handler)
 
 
-parser = argparse.ArgumentParser(description="Predict next year GDP growth")
-parser.add_argument(
-    "task",
-    choices=["train", "predict"],
-    help="Task to be performed",
-)
-parser.add_argument(
-    "-split",
-    type=float,
-    default=0.3,
-    help="test size in test-train split. Domain: (0,1) + {0}. \
-    If set to 0 no split is made.",
-)
-parser.add_argument(
-    "-filename",
-    type=str,
-    default="XGBoost.model",
-    help="Name for the model to be saved/loaded",
-)
-parser.add_argument(
-    "-previous_year",
-    action="store_true",
-    help="specify to use data from 2 years. \
-            If wanted, must be used in both training and predict",
-)
-parser.add_argument("-log_print", action="store_true", help="specify to print log")
+def parsing():
+    """Parses input arguments"""
+    parser = argparse.ArgumentParser(
+        description="Predict next year GDP growth",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "task",
+        choices=["train", "predict"],
+        help="Task to be performed",
+    )
+    parser.add_argument(
+        "-split",
+        type=float,
+        default=0.3,
+        help="test size in test-train split. Domain: (0,1) + {0}. \
+        If set to 0 no split is made.",
+    )
+    parser.add_argument(
+        "-year",
+        type=int,
+        default=None,
+        help="Year to predict. If None is specified default to last year in dataset + 1",
+    )
+    parser.add_argument(
+        "-filename",
+        type=str,
+        default="XGBoost.model",
+        help="Name for the model to be saved/loaded",
+    )
+    parser.add_argument(
+        "-previous_year",
+        action="store_true",
+        help="specify to use data from 2 years. \
+                If wanted, must be used with both train and predict",
+    )
+    parser.add_argument("-log_print", action="store_true", help="specify to print log")
+    args = parser.parse_args()
+    return args
 
 
 if __name__ == "__main__":
-    args = parser.parse_args()
+    args = parsing()
     if args.log_print:
         log_print_func()
 
@@ -87,7 +100,7 @@ if __name__ == "__main__":
         t0 = time.time()
         try:
             model = models.GDPGrowthPredictor(**config.XG_PARAMS)
-            predictions = model.predict(filename, args.previous_year)
+            predictions = model.predict(filename, args.previous_year, args.year)
             _io.write_predictions(predictions)
             logging.info("Predictions saved into database")
             logging.info("Elapsed time: %.3f seconds", time.time() - t0)

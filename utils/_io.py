@@ -1,6 +1,7 @@
 """Read and write into dataset
 Given that io library already exists we've named it _io"""
 import sqlite3
+import logging
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from . import config
@@ -82,16 +83,32 @@ def retrieve_training_dataset(split, previous_year):
     return X, None, y, None, None
 
 
-def retrieve_predict_dataset(previous_year):
+def retrieve_predict_dataset(previous_year, year=None):
     """Return dataset to append predictions and X_predict to create them"""
     pivoted_df, _ = read_dataset(previous_year)
-    country_list = pivoted_df.index.unique("Country")
 
-    # Dataframe with all the countries
+    years = pivoted_df.index.unique("Year")
+
+    if year is None:
+        year = years[-1]
+    elif (year > years[-1] + 1) or (year <= years[0]):
+        logging.error("There is no data available to perform predictions for this year")
+        raise ValueError(
+            "There is no data available to perform predictions for this year"
+        )
+    else:
+        year -= 1
+
+    # Dataframe with all the countries with data for the given year
+    X_predict = pivoted_df.filter(like=f"{year}", axis=0)
+    all_countries = pivoted_df.index.unique("Country")
+    country_list = X_predict.index.unique("Country")
+    if len(country_list) < len(all_countries):
+        logging.warning("Not all countries have data for the given year")
+
     predictions = pd.DataFrame(country_list)
     predictions.rename(columns={"Country": "CountryCode"}, inplace=True)
-    predictions["Year"] = config.NEXT_YEAR
-    X_predict = pivoted_df.filter(like=f"{config.NEXT_YEAR}", axis=0)
+    predictions["Year"] = year + 1
 
     return predictions, X_predict
 
