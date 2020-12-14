@@ -20,7 +20,7 @@ def plot_performance_results(y_real, y_pred):
     plt.ylim((-15, 15))
     plt.grid()
     plt.annotate("R^2 = {:.3f}".format(r2_score(y_real, y_pred)), (-14, 13))
-    filename = os.path.join(config.LOGS_PATH, "model_performance.png")
+    filename = os.path.join(config.MODELS_PATH, "model_performance.png")
     plt.savefig(filename)
     plt.close()
 
