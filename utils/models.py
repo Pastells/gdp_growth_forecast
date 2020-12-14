@@ -4,6 +4,7 @@ import numpy as np
 from xgboost import XGBRegressor
 from sklearn.metrics import r2_score, mean_squared_error
 from . import _io
+from . import plots
 
 
 class GDPGrowthPredictor:
@@ -13,8 +14,8 @@ class GDPGrowthPredictor:
         """Create model with given parameters"""
         self.model = XGBRegressor(*args, **kwargs)
 
-    def train(self, filename, split, previous_year, *args, **kwargs):
-        """Train model"""
+    def train(self, filename, split, previous_year, plot, *args, **kwargs):
+        """Train model, and plot results"""
         X_train, X_test, y_train, y_test, features = _io.retrieve_training_dataset(
             split, previous_year
         )
@@ -22,9 +23,9 @@ class GDPGrowthPredictor:
         self.save(filename)
 
         if split != 0:
-            self.test(X_test, y_test, features, split)
+            self.test(X_test, y_test, features, split, plot)
 
-    def test(self, X_test, y_test, features, split):
+    def test(self, X_test, y_test, features, split, plot):
         """Test model"""
         model_y_pred = self.model.predict(X_test)
 
@@ -40,6 +41,11 @@ class GDPGrowthPredictor:
         logging.info("Test results with %s split:", split)
         logging.info("\t RMSE: %.3f", mean_squared_error(y_test, model_y_pred) ** 0.5)
         logging.info("\t R^2: %.3f", r2_score(y_test, model_y_pred))
+
+        if plot:
+            logging.info("Generating plots")
+            plots.plot_performance_results(y_test, model_y_pred)
+            plots.plot_shap_results(X_test, features, self.model)
 
     def predict(self, filename, previous_year, year, *args, **kwargs):
         """Make predictions for next year GDP growth,

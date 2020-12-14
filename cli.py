@@ -24,8 +24,8 @@ logging.basicConfig(
 
 def log_print_func():
     """print all the logging info"""
-    root = logging.getLogger()
-    root.setLevel(logging.DEBUG)
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
 
     handler = logging.StreamHandler(sys.stdout)
     handler.setLevel(logging.DEBUG)
@@ -33,7 +33,8 @@ def log_print_func():
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
     handler.setFormatter(formatter)
-    root.addHandler(handler)
+    logger.addHandler(handler)
+    logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 
 def parsing():
@@ -72,6 +73,7 @@ def parsing():
         help="specify to use data from 2 years. \
                 If wanted, must be used with both train and predict",
     )
+    parser.add_argument("-plot", action="store_true", help="specify to save figures")
     parser.add_argument("-log_print", action="store_true", help="specify to print log")
     args = parser.parse_args()
     return args
@@ -89,7 +91,7 @@ if __name__ == "__main__":
         t0 = time.time()
         try:
             model = models.GDPGrowthPredictor(**config.XG_PARAMS)
-            model.train(filename, args.split, args.previous_year)
+            model.train(filename, args.split, args.previous_year, args.plot)
             logging.info("Elapsed time: %.3f seconds", time.time() - t0)
         except:
             logging.exception("Error while training")
