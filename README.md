@@ -14,7 +14,7 @@ Actually, we used a slightly different version, with data only till 2010, and th
 
 For the program to work, unzip the database and leave it in the same folder as cli.py.
 
-We used a virtualenv to run the program, all the dependencies can be found on requirements.txt.
+We used a virtualenv to run the program, all the dependencies can be found inside requirements.txt.
 
 ### Structure
 
