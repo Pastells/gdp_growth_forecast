@@ -2,7 +2,7 @@
 
 Authors: Pol Pastells Vilà, Narcís Font Massot (December 2020)
 
-Python project for a master's course (see project\_description):
+Python project for a master's course (see `project_description.pdf`):
 
 Predicting the GDP Growth for the next year using the World Development Indicators with SQL from Kaggle:
 
@@ -12,7 +12,7 @@ Actually, we used a slightly different version, with data only till 2010, and th
 
 ### Execution
 
-For the program to work, unzip the database and leave it in the same folder as cli.py.
+For the program to work, unzip the database and leave it in the same folder as `cli.py`.
 
 We used a virtualenv to run the program, all the dependencies can be found inside requirements.txt.
 
@@ -28,6 +28,6 @@ The folders are structured as follows:
 
 + Reports: html version of the notebooks.
 
-+ Utils: modules called from cli.py (main program)
++ Utils: modules called from `cli.py` (main program)
 
 
