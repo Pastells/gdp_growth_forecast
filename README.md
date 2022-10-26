@@ -2,7 +2,7 @@
 
 Authors: Pol Pastells Vilà, Narcís Font Massot (December 2020)
 
-Python project for a master's course (see `project_description.pdf`):
+Explainable ML project for a master's course (see `project_description.pdf`) using XGBoost and Shap.
 
 Predicting the GDP Growth for the next year using the World Development Indicators with SQL from Kaggle:
 
